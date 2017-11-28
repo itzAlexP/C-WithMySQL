@@ -15,10 +15,13 @@ using namespace std;
 
 std::string
 sUserNick,
-sUserPass;
+sUserPass,
+sUserPassRepeat;
 
 bool
-bVerified = false;
+bVerified = false,
+bPlayerCreated = false,
+bRepeatPassword = false;
 
 
 
@@ -47,14 +50,16 @@ int main()
 
             if(res->next() && res->getInt(1) == 1) //Existe usuario
             {
+                //Pedimos contraseña
                 std::cout << "\nIntroduzca contraseña" << std::endl;
                 std::cin >> sUserPass;
 
+                //Comprobamos si existe usuario con dichos datos
                 sql::ResultSet* res = stmt->executeQuery("SELECT count(*) FROM Jugadores WHERE Nombre = '" + sUserNick + "' AND Pass = '" + sUserPass + "'");
 
                 if(res->next() && res->getInt(1) == 1) //Existe usuario con contraseña
                 {
-
+                    //Se han validado los datos y puede iniciar el juego.
                     bVerified = true;
                 }
                 else // No existe usuario con contraseña
@@ -64,10 +69,51 @@ int main()
             }
             else //No existe usuario
             {
-                std::cout << "\nNo existe dicho usuario. \n" << std::endl;
+                std::cout << "\nNo existe dicho usuario. Se va a proceder a crear un nuevo usuario.\n" << "\nInserte nombre de usuario" <<std::endl;
+                while(!bPlayerCreated)//Mientras no este el jugador creado repetiremos
+                {
+                    //Pedimos al usuario que indique un nuevo usuario
 
+                    std::cin >> sUserNick;
+
+                    //Comprobamos si el nick esta libre
+                    sql::ResultSet* res = stmt->executeQuery("SELECT count(*) FROM Jugadores WHERE Nombre = '" + sUserNick + "'");
+                    if(res->next() && res->getInt(1) == 1) //Existe usuario
+                    {
+                        std::cout << "Usuario ya en uso, inserte otro nombre de usuario." << std::endl;
+                    }
+                    else  //No existe usuario
+                    {
+                        std::cout << "Usuario disponible, inserte contraseña.\n";
+                        while(!bRepeatPassword)
+                        {
+                            std::cin >> sUserPass;
+                            std::cout << "\nRepita contraseña.\n";
+                            std::cin >> sUserPassRepeat;
+
+                            if(sUserPass == sUserPassRepeat)
+                            {
+
+                                stmt->execute("INSERT INTO Jugadores (Nombre, Pass) VALUES ('"+ sUserNick +"', '"+ sUserPass +"')");
+                                bRepeatPassword = true;
+                                bPlayerCreated = true;
+                                bVerified = true;
+
+                            }
+                            else
+                            {
+                                std::cout << "\nLas contraseñas no coinciden, introduzca de nuevo la contraseña.\n";
+
+                            }
+                        }
+                    }
+                }
             }
         }
+        system("clear");
+
+        std::cout << "Empieza el juego.";
+
     }
     /*
         try
