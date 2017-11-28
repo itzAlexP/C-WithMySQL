@@ -11,18 +11,20 @@
 #define PASSWORD "salvadorgroc"
 #define DATABASE "dbgame"
 
-
-std::string sUserInput;
-
 using namespace std;
+
+std::string
+sUserNick,
+sUserPass;
+
+bool
+bVerified = false;
+
+
+
 
 int main()
 {
-
-    //Preguntamos nombre dde usuario
-    std::cout << "Inserte nombre de usuario: " << std::endl;
-    std::cin >> sUserInput;
-
     try
     {
 
@@ -32,22 +34,41 @@ int main()
         con->setSchema(DATABASE);
         sql::Statement* stmt = con->createStatement();
 
-        //Comprobamos si existe el nick del jugador
-        sql::ResultSet* res = stmt->executeQuery("SELECT count(*) FROM Jugadores WHERE Nombre = '" + sUserInput + "'");
-
-
-        if(res->next() && res->getInt(1) == 1) //Existe
+        while(!bVerified)
         {
-            std::cout << "Existe" << std::endl;
 
-        }
-        else //No existe
-        {
-            std::cout << "No existe" << std::endl;
+            //Preguntamos nombre de usuario
+            std::cout << "Inserte nombre de usuario: " << std::endl;
+            std::cin >> sUserNick;
 
+            //Comprobamos si existe el nick del jugador
+            sql::ResultSet* res = stmt->executeQuery("SELECT count(*) FROM Jugadores WHERE Nombre = '" + sUserNick + "'");
+
+
+            if(res->next() && res->getInt(1) == 1) //Existe usuario
+            {
+                std::cout << "\nIntroduzca contraseña" << std::endl;
+                std::cin >> sUserPass;
+
+                sql::ResultSet* res = stmt->executeQuery("SELECT count(*) FROM Jugadores WHERE Nombre = '" + sUserNick + "' AND Pass = '" + sUserPass + "'");
+
+                if(res->next() && res->getInt(1) == 1) //Existe usuario con contraseña
+                {
+
+                    bVerified = true;
+                }
+                else // No existe usuario con contraseña
+                {
+                    std::cout << "\nNo se ha encontrado ningun usuario con esa contraseña.\n" << std::endl;
+                }
+            }
+            else //No existe usuario
+            {
+                std::cout << "\nNo existe dicho usuario. \n" << std::endl;
+
+            }
         }
     }
-
     /*
         try
         {
