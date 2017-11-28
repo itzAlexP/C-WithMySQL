@@ -11,46 +11,78 @@
 #define PASSWORD "salvadorgroc"
 #define DATABASE "dbgame"
 
+
+std::string sUserInput;
+
 using namespace std;
 
 int main()
 {
 
+    //Preguntamos nombre dde usuario
+    std::cout << "Inserte nombre de usuario: " << std::endl;
+    std::cin >> sUserInput;
 
-/*
     try
     {
 
+        //Conectamos a base de datos.
         sql::Driver* driver = get_driver_instance();
         sql::Connection* con = driver->connect(HOST, USER, PASSWORD);
-
         con->setSchema(DATABASE);
         sql::Statement* stmt = con->createStatement();
-        sql::ResultSet* res = stmt->executeQuery("Select Nombre, Pass from Jugadores");
-        std::cout<<"USERNAME     |      USERPASSWORD"<<std::endl;
-        while(res->next())
-        {
-            std::cout<<res->getString("Nombre")<<"      |      "<<res->getString("Pass")<<std::endl;
-        }
-        delete(res);
 
-        res = stmt->executeQuery("SELECT count(*) FROM Jugadores WHERE Nombre = 'Player1' and Pass = '123' ");
+        //Comprobamos si existe el nick del jugador
+        sql::ResultSet* res = stmt->executeQuery("SELECT count(*) FROM Jugadores WHERE Nombre = '" + sUserInput + "'");
 
-        if(res->next())
+
+        if(res->next() && res->getInt(1) == 1) //Existe
         {
-            int existe = res->getInt(1);
-            if (existe == 1)
-                std::cout << "El usuario existe en la BD. La autenticacion es correcta." <<std::endl;
-            else
-                std::cout <<"El usuario NO existe en la BD." <<std::endl;
+            std::cout << "Existe" << std::endl;
+
         }
-        delete(res);
-        delete(stmt);
-        delete(con);
+        else //No existe
+        {
+            std::cout << "No existe" << std::endl;
+
+        }
     }
+
+    /*
+        try
+        {
+
+            sql::Driver* driver = get_driver_instance();
+            sql::Connection* con = driver->connect(HOST, USER, PASSWORD);
+
+            con->setSchema(DATABASE);
+            sql::Statement* stmt = con->createStatement();
+            sql::ResultSet* res = stmt->executeQuery("Select Nombre, Pass from Jugadores");
+            std::cout<<"USERNAME     |      USERPASSWORD"<<std::endl;
+            while(res->next())
+            {
+                std::cout<<res->getString("Nombre")<<"      |      "<<res->getString("Pass")<<std::endl;
+            }
+            delete(res);
+
+            res = stmt->executeQuery("SELECT count(*) FROM Jugadores WHERE Nombre = 'Player1' and Pass = '123' ");
+
+            if(res->next())
+            {
+                int existe = res->getInt(1);
+                if (existe == 1)
+                    std::cout << "El usuario existe en la BD. La autenticacion es correcta." <<std::endl;
+                else
+                    std::cout <<"El usuario NO existe en la BD." <<std::endl;
+            }
+            delete(res);
+            delete(stmt);
+            delete(con);
+        }
+        */
     catch(sql::SQLException &e)
     {
         std::cout << "Se produce el error " << e.getErrorCode()<<std::endl;
-    }*/
+    }
     return 0;
 }
