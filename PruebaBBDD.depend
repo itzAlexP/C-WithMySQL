@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1511909218 source:/home/aperez/Desktop/PruebaBBDD/main.cpp
+1511959999 source:/home/aperez/Desktop/PruebaBBDD/main.cpp
 	<iostream>
 	<mysql_connection.h>
 	<cppconn/driver.h>
@@ -7,6 +7,7 @@
 	<cppconn/resultset.h>
 	<cppconn/statement.h>
 	<cppconn/prepared_statement.h>
+	<vector>
 
 1494432899 /home/aperez/Desktop/PruebaBBDD/mysql-connector-c++-1.1.9-linux-glibc2.12-x86-64bit/include/mysql_connection.h
 	<cppconn/connection.h>

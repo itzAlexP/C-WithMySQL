@@ -5,6 +5,7 @@
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
 #include <cppconn/prepared_statement.h>
+#include <vector>
 
 #define HOST "tcp://127.0.0.1:3306"
 #define USER "root"
@@ -16,15 +17,16 @@ using namespace std;
 std::string
 sUserNick,
 sUserPass,
-sUserPassRepeat;
+sUserPassRepeat,
+sUserRaces;
+
+std::vector<string> sNameRaces;
 
 bool
 bVerified = false,
 bPlayerCreated = false,
-bRepeatPassword = false;
-
-
-
+bRepeatPassword = false,
+bRaceCreated = false;
 
 int main()
 {
@@ -84,32 +86,67 @@ int main()
                     }
                     else  //No existe usuario
                     {
-                        std::cout << "Usuario disponible, inserte contraseña.\n";
-                        while(!bRepeatPassword)
+                        std::cout << "\nUsuario disponible, inserte contraseña.\n";
+                        while(!bRepeatPassword)//Repetimos hasta tener una contraseña valida
                         {
+                            //Pedimos al usuario que escriba y repita la contraseña
                             std::cin >> sUserPass;
                             std::cout << "\nRepita contraseña.\n";
                             std::cin >> sUserPassRepeat;
 
-                            if(sUserPass == sUserPassRepeat)
+                            if(sUserPass == sUserPassRepeat)//Las contraseñas coinciden
                             {
 
                                 stmt->execute("INSERT INTO Jugadores (Nombre, Pass) VALUES ('"+ sUserNick +"', '"+ sUserPass +"')");
                                 bRepeatPassword = true;
                                 bPlayerCreated = true;
-                                bVerified = true;
-
                             }
-                            else
+                            else //Las contraseñas no coinciden
                             {
                                 std::cout << "\nLas contraseñas no coinciden, introduzca de nuevo la contraseña.\n";
 
+                            }
+                        }
+
+                        //Creacion de raza
+                        system("clear");
+
+                        //Listamos las razas
+                        res = stmt->executeQuery("SELECT Nombre, Descripcion FROM Razas");
+                        std::cout<<"Nombre     |      Descripcion\n"<<std::endl;
+                        while(res->next())
+                        {
+                            sNameRaces.push_back(res->getString("Nombre"));
+                            std::cout<<res->getString("Nombre")<<"      |      "<<res->getString("Descripcion")<<std::endl;
+                        }
+                        std::cout << "\nSelecciona una raza.\n";
+
+                        //Preguntaremos razas hasta que el usuario introduzca una disponible
+                        while(!bRaceCreated)
+                        {
+                            std::cin >> sUserRaces;
+                            for(int i = 0; i < sNameRaces.size(); i++)
+                            {
+                                if(sUserRaces == sNameRaces[i])
+                                {
+                                    bRaceCreated = true;
+                                    //-----------------
+                                    //bVerified = true;
+                                    break;
+                                }
+                                else if(i == 2)
+                                {
+
+                                    std::cout << "\nRaza no encontrada, seleccione una raza de la lista." << std::endl;
+
+                                }
                             }
                         }
                     }
                 }
             }
         }
+
         system("clear");
 
         std::cout << "Empieza el juego.";
