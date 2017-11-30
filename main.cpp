@@ -8,8 +8,8 @@
 #include <vector>
 
 #define HOST "tcp://127.0.0.1:3306"
-#define USER "root"
-#define PASSWORD "salvadorgroc"
+#define USER ""
+#define PASSWORD ""
 #define DATABASE "dbgame"
 
 using namespace std;
@@ -177,6 +177,7 @@ int main()
                                     iIdRaza = res->getInt("RazaID");
                                 }
 
+                                //Insertamos el personaje en la base de datos
                                 stmt->execute("INSERT INTO Personajes(Nombre, IDJugador, IDRaza) VALUES ('"+sCharacterName+"', "+ std::to_string(iIdJugador) +", "+ std::to_string(iIdRaza) +")");
 
                                 bVerified = true;
@@ -192,38 +193,7 @@ int main()
         std::cout << "Empieza el juego.";
 
     }
-    /*
-        try
-        {
 
-            sql::Driver* driver = get_driver_instance();
-            sql::Connection* con = driver->connect(HOST, USER, PASSWORD);
-
-            con->setSchema(DATABASE);
-            sql::Statement* stmt = con->createStatement();
-            sql::ResultSet* res = stmt->executeQuery("Select Nombre, Pass from Jugadores");
-            std::cout<<"USERNAME     |      USERPASSWORD"<<std::endl;
-            while(res->next())
-            {
-                std::cout<<res->getString("Nombre")<<"      |      "<<res->getString("Pass")<<std::endl;
-            }
-            delete(res);
-
-            res = stmt->executeQuery("SELECT count(*) FROM Jugadores WHERE Nombre = 'Player1' and Pass = '123' ");
-
-            if(res->next())
-            {
-                int existe = res->getInt(1);
-                if (existe == 1)
-                    std::cout << "El usuario existe en la BD. La autenticacion es correcta." <<std::endl;
-                else
-                    std::cout <<"El usuario NO existe en la BD." <<std::endl;
-            }
-            delete(res);
-            delete(stmt);
-            delete(con);
-        }
-        */
     catch(sql::SQLException &e)
     {
         std::cout << "Se produce el error " << e.getErrorCode()<<std::endl;
