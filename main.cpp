@@ -14,11 +14,17 @@
 
 using namespace std;
 
+int
+iIdJugador,
+iIdRaza;
+
 std::string
 sUserNick,
 sUserPass,
 sUserPassRepeat,
-sUserRaces;
+sUserRaces,
+sCharacterName;
+
 
 std::vector<string> sNameRaces;
 
@@ -26,7 +32,8 @@ bool
 bVerified = false,
 bPlayerCreated = false,
 bRepeatPassword = false,
-bRaceCreated = false;
+bRaceCreated = false,
+bCharacterCreated = false;
 
 int main()
 {
@@ -130,8 +137,7 @@ int main()
                                 if(sUserRaces == sNameRaces[i])
                                 {
                                     bRaceCreated = true;
-                                    //-----------------
-                                    //bVerified = true;
+
                                     break;
                                 }
                                 else if(i == 2)
@@ -140,6 +146,40 @@ int main()
                                     std::cout << "\nRaza no encontrada, seleccione una raza de la lista." << std::endl;
 
                                 }
+                            }
+                        }
+
+                        std::cout << "\nInserte nombre del personaje." << std::endl;
+                        while(!bCharacterCreated)
+                        {
+                            std::cin >> sCharacterName;
+                            res = stmt->executeQuery("SELECT count(*) FROM Personajes, Jugadores, Razas WHERE Personajes.IDJugador = Jugadores.JugadorID AND Personajes.IDRaza = Razas.RazaID AND Personajes.Nombre = '"+sCharacterName+"'");
+                            if(res->next() && res->getInt(1) == 1) //Existe personaje
+                            {
+                                std::cout << "\nNombre ya en uso, inserte otro nombre de personaje." << std::endl;
+                            }
+                            else //Nombre libre
+                            {
+                                bCharacterCreated = true;
+                                //Obtenemos id del jugador
+                                res = stmt->executeQuery("SELECT JugadorId FROM Jugadores WHERE Nombre = '"+sUserNick+"'");
+                                while(res->next())
+                                {
+
+                                    iIdJugador = res->getInt("JugadorID");
+                                }
+
+                                //Obtenemos id de la raza
+                                res = stmt->executeQuery("SELECT RazaId FROM Razas WHERE Nombre = '"+sUserRaces+"'");
+                                while(res->next())
+                                {
+
+                                    iIdRaza = res->getInt("RazaID");
+                                }
+
+                                stmt->execute("INSERT INTO Personajes(Nombre, IDJugador, IDRaza) VALUES ('"+sCharacterName+"', "+ std::to_string(iIdJugador) +", "+ std::to_string(iIdRaza) +")");
+
+                                bVerified = true;
                             }
                         }
                     }
